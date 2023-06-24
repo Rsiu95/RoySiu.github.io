@@ -28,7 +28,7 @@ Some edge cases to consider:
 >> Possibly even more
 """
 
-# The solution:
+# The solution > Linear Search:
 
 
 def locate_card(cards, query):
@@ -44,6 +44,30 @@ def locate_card(cards, query):
         return output_list[0]
     else:
         return -1
+
+
+# The solution > Binary Search:
+# Information provided tells us the cards are in descending order, what this means is that we can search the middle of the array and eliminate half of the other variables depending on the value of the middle.
+# i.e. in cards = [13, 10, 7, 6, 4, 3, 1], the query is 7, if we search the middle element, we find that it is 6. Here 6 < 7 therefore 7 MUST lie left of 6 so we can just search from index 0 > 2 as we know index
+# 3 is a 6, effectively speeding up our algorithm
+# Find the middle element
+# Check if it's equal to query, if it's > query, search to the right, if its < query, search to the left
+# find the middle element of the remaining list, repeat above step until you find the number.
+
+def locate_card(cards, query):
+    start, end = 0, len(cards) - 1
+    
+    while start <= end:
+        mid = (start+end) // 2 # integer division
+        mid_number = cards[mid]
+
+        if mid_number == query:
+            return mid
+        elif mid_number < query:
+            start = mid - 1
+        elif mid_number > query:
+            end = mid + 1
+    return -1
 
 
 # Test functions:
