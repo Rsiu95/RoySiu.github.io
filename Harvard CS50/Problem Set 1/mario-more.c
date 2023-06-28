@@ -30,11 +30,27 @@ void print_grid(int size)
 {
     for (int row = 0; row < size; row++)
     {
+        // Prints the Spaces before the Hashes
         for (int space = 1; space < size - row; space++)
         {
             printf(" ");
         }
-        for (int hash = 0; hash < row + 1; hash ++)
+
+        // Prints the Left side of pyramid
+        for (int hash = 0; hash < row + 1; hash++)
+        {
+            printf("#");
+        }
+
+
+        // Prints the spaces inbetween
+        for (int space = 0; space < 2; space++)
+        {
+            printf(" ");
+        }
+
+        // Prints the Right side of pyramid
+        for (int hash = 0; hash < row + 1; hash++)
         {
             printf("#");
         }
