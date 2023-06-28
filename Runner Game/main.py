@@ -88,21 +88,21 @@ def display_score():
     screen.blit(score_surface,score_rect)
     return current_time
 
-# Handles the obstacles (fly + snail)
-def obstacle_movement(obstacle_list):
-    if obstacle_list:
-        for obstacle_rect in obstacle_list:
-            obstacle_rect.x -= 5
-            if obstacle_rect.bottom == 300:
-                screen.blit(snail_surface, obstacle_rect)
-            else:
-                screen.blit(fly_surface, obstacle_rect)
+# # Handles the obstacles (fly + snail)
+# def obstacle_movement(obstacle_list):
+#     if obstacle_list:
+#         for obstacle_rect in obstacle_list:
+#             obstacle_rect.x -= 5
+#             if obstacle_rect.bottom == 300:
+#                 screen.blit(snail_surface, obstacle_rect)
+#             else:
+#                 screen.blit(fly_surface, obstacle_rect)
                 
-        obstacle_list = [obstacle for obstacle in obstacle_list if obstacle.x > -100]
+#         obstacle_list = [obstacle for obstacle in obstacle_list if obstacle.x > -100]
         
-        return obstacle_list
-    else:
-        return []
+#         return obstacle_list
+#     else:
+#         return []
 
 # Handles Collision
 def check_collision(player, obstacles):
