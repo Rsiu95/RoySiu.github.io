@@ -72,7 +72,7 @@ def locate_card(cards, query):
 
 # Updating the binary search function to accommodate multiple values of query. In the assumptions, we outlined that we would return the first instance of query in the list of cards.
 # i.e. cards = [8, 8, 6, 6, 6, 5, 4, 4], query = 6, we would return 2 as the first occurence of 6 is index 2.
-# Write a helper funciton to determine if the value on the left of mid is == query.
+# Write a helper function to determine if the value on the left of mid is == query.
 
 def test_locate_card(cards, query, mid): # take in the cards list and the query and check if the mid number also exists to its left as it is a sorted list
     
