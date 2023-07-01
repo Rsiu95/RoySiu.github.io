@@ -70,6 +70,51 @@ def locate_card(cards, query):
     return -1
 
 
+# Updating the binary search function to accommodate multiple values of query. In the assumptions, we outlined that we would return the first instance of query in the list of cards.
+# i.e. cards = [8, 8, 6, 6, 6, 5, 4, 4], query = 6, we would return 2 as the first occurence of 6 is index 2.
+# Write a helper funciton to determine if the value on the left of mid is == query.
+
+def test_locate_card(cards, query, mid): # take in the cards list and the query and check if the mid number also exists to its left as it is a sorted list
+    
+    # get the mid number
+    mid_number = cards[mid]
+    print("mid:", mid, ", mid_number:", mid_number)
+    
+    # if this is equal to query
+    if mid_number == query:
+        
+        # we need to check if the value to the left of mid is == query AND if we haven't exited the list (mid - 1 >= 0) since we cannot access index -1.
+        # i.e. if we have a search space of len 2, [8,8], the mid index becomes 0, and going before that would mean we are trying to access index -1.
+        if mid - 1 >= 0 and cards[mid - 1] == query:
+            return 'left'
+        else:
+            return 'found'
+        
+    # this is just to check if the query'd number is to the left of our mid number or right.
+    elif mid_number < query:
+        return 'left'
+    else:
+        return 'right'
+
+# Update the initial binary search algorithm with the new helper function created.
+
+def locate_card(cards, query):
+    start, end = 0, len(cards) - 1
+    
+    while start <= end:
+        mid = (start+end) // 2 # integer division
+        result = test_locate_card(cards, query, mid)
+        
+        #mid_number = cards[mid]
+
+        if result == 'found':
+            return mid
+        elif result == 'left':
+            start = mid - 1
+        elif result == 'right':
+            end = mid + 1
+    return -1
+
 # Test functions:
 tests = []
 
