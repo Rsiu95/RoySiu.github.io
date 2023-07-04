@@ -29,6 +29,12 @@ def get_user(user_id):
     # Return data from a server, we query JSON (Javascript Object Notation)  > similar to a python dictionary
     return jsonify(user_data), 200 # >>> 200 standard HTTPS status code for success. More codes
 
+@app.route("/create-user", methods=["POST"]) # possible to add extra methods, separate by comma
+def create_user():
+    data = request.get_json() # give all json data parsed in body of request
+    
+    return jsonify(data), 201
+
 # HTTP Methods for other roots, common methods
 # GET >> Request data from a specificed resource
 # POST >> Create a resource/data
