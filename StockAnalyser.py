@@ -70,3 +70,13 @@ for article in articles:
     print("Description:", description)
     print("Sentiment:", description_sentiment)
     print("-------------------")
+
+def retrieve_stock_data(stock_symbol):
+    url = f"https://api.example.com/stocks/{stock_symbol}/history"  # Replace with the actual API endpoint for historical stock data
+    response = requests.get(url)
+    stock_data = response.json()
+    return stock_data
+
+# Retrieve historical stock data for the selected stock symbol
+stock_data = retrieve_stock_data(stock_symbol)
+
