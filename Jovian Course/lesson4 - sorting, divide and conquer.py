@@ -96,8 +96,10 @@ Repeat steps 1 to 3 till the list is sorted
 
 # bubble sort algorithm
 
-def bubble_sort(nums):
-    # Create a copy of the list, to avoid changing it
+def bubble_sort(nums): # O(n^2) time complexity, O(n) space complexity
+    # Create a copy of the list, to avoid changing it 
+    # this is to either create a copy of the input or modify the input and return
+    # either a new list or update the current list
     nums = list(nums)
     
     # 4. Repeat the process n-1 times
@@ -114,3 +116,15 @@ def bubble_sort(nums):
     
     # Return the sorted list
     return nums
+
+# insertion sort
+nums = [23, 2, 1, 4, 11]
+def insertion_sort(nums):
+    nums = list(nums)
+    for i in range(len(nums)):
+        cur = nums.pop(i)
+        j = i-1
+        while j >=0 and nums[j] > cur:
+            j -= 1
+        nums.insert(j+1, cur)
+    return nums        
