@@ -121,3 +121,52 @@ for test in tests:
     print("\n")
 print("Pass:", count_pass, "Fail:", count_fail)
 
+# Memorisaiton
+
+def knapsack_memo(weights, profits, capacity):
+    memo = {}
+    
+    def recursion(capacity, idx = 0):
+        key = (capacity, idx)
+        
+        # check if the key is currently in the dict
+        if key in memo:
+            return memo[key]
+        
+        if idx == len(weights):
+            memo[key] = 0
+        
+        elif weights[idx] > capacity:
+            memo[key] = recursion(capacity, idx + 1)
+        
+        else:
+            option1 = recursion(capacity, idx + 1)
+            option2 = profits[idx] + \
+                    recursion(capacity - weights[idx], idx + 1)
+            
+            # return the maximum value between both options to evaluate the largest profit
+            memo[key] = max(option1, option2)
+        return memo[key]
+    
+    return recursion(capacity,0)
+
+print("MEMO\n")
+count = 0
+count_pass = 0
+count_fail = 0
+for test in tests:
+    count += 1
+    print("Test Case", count)
+    print("weights:", test['input']['weights'])
+    print("profits:", test['input']['profits'])
+    print("capacity:", test['input']['capacity'])
+    print("Expected Output:", test['output'])
+    print("Actual Output:", knapsack_memo(**test['input']))
+    if knapsack_memo(**test['input']) == test['output']:
+        print("Pass")
+        count_pass += 1
+    else:
+        print("Fail")
+        count_fail += 1
+    print("\n")
+print("Pass:", count_pass, "Fail:", count_fail)
