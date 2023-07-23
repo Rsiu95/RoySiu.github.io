@@ -170,3 +170,45 @@ for test in tests:
         count_fail += 1
     print("\n")
 print("Pass:", count_pass, "Fail:", count_fail)
+
+def max_profit_dp(weights, profits, capacity):
+    rows = len(weights)
+    #table = [[0 for _ in range(capacity + 1)] for _ in range(rows + 1)]
+
+    table = []
+    for row in range(rows + 1):
+        row = []
+        for col in range(capacity + 1):
+            row.append(0)
+        table.append(row)
+    
+    for i in range(rows):
+        for c in range(1, capacity + 1):
+            if weights[i] > c:
+                table[i + 1][c] = table[i][c]
+            else:
+                table[i + 1][c] = max(table[i][c], profits[i] + table[i][c - weights[i]])
+                
+                
+    return table[-1][-1]
+
+print("DYNAMIC\n")
+count = 0
+count_pass = 0
+count_fail = 0
+for test in tests:
+    count += 1
+    print("Test Case", count)
+    print("weights:", test['input']['weights'])
+    print("profits:", test['input']['profits'])
+    print("capacity:", test['input']['capacity'])
+    print("Expected Output:", test['output'])
+    print("Actual Output:", max_profit_dp(**test['input']))
+    if max_profit_dp(**test['input']) == test['output']:
+        print("Pass")
+        count_pass += 1
+    else:
+        print("Fail")
+        count_fail += 1
+    print("\n")
+print("Pass:", count_pass, "Fail:", count_fail)
