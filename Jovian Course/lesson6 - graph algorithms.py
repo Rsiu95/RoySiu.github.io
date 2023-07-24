@@ -142,7 +142,7 @@ print("\n")
 print(graph2)
 
 # Graph Traversal
-# Breadth-First Serach (BFS)
+# Breadth-First Serach (BFS) -> use a queue (first in first out)
 
 '''
 Implement BFS given a source node in a graph
@@ -180,9 +180,101 @@ def bfs(graph, root):
                 visited[node] = True
                 queue.append(node)
     return queue, distance, parent
-
+print('\n')
 print(graph1)
 # supposedly i need to keep a print graph1 statement before i print bfs because of
 # how stdout works in python apparently...? odd...
 print(bfs(graph1, 3))
+print('\n')
 
+#num_nodes3 = 9
+#edges3 = [(0, 1), (0, 3), (1, 2), (2, 3), (4, 5), (4, 6), (5, 6), (7, 8)]
+
+# Write a program to check if all the nodes in a graph are connected
+
+# depth-first search (DFS) - use a stack (last in last out)
+
+def dfs(graph, root):
+    stack = []
+    visited = [False] * len(graph.adjacency_list)
+    result = []
+    # pushing these into stack first, don't want to label as visited until we pop from stack
+    stack.append(root)
+    
+    while len(stack) > 0:
+        current = stack.pop()
+        if not visited[current]:
+            visited[current] = True
+            result.append(current)
+            
+            for node in graph.adjacency_list[current]:
+                stack.append(node)
+        
+    return result
+
+print(graph1)
+
+print(dfs(graph1,3))
+print('\n')
+
+# write a function to detect a cycle in a graph
+# a cycle is a path where the original node paths back to itself i.e. in the above
+# diagram, 1, 4, 3 is a cycle
+
+# TODO
+
+
+# weighted graphs
+
+num_nodes5 = 9
+# (node1, node2, weight)
+edges5 = [(0, 1, 3), (0, 3, 2), (0, 8, 4), (1, 7, 4), (2, 7, 2), (2, 3, 6), 
+          (2, 5, 1), (3, 4, 1), (4, 8, 8), (5, 6, 8)]
+
+# directed graphs,
+num_nodes6 = 5
+edges6 = [(0, 1), (1, 2), (2, 3), (2, 4), (4, 2), (3, 0)]
+
+# define a class to represent weighted and directed graphs
+
+class Graph:
+    def __init__(self, num_nodes, edges, directed = False, weighted = False):
+        self.num_nodes = num_nodes
+        self.directed = directed
+        self.weighted = weighted
+        self.data = [[] for _ in range(num_nodes)]
+        self.weight = [[] for _ in range(num_nodes)]
+        
+        for edge in edges:
+            if self.weighted:
+                # include weights
+                node1, node2, weight = edge
+                self.data[node1].append(node2)
+                self.weight[node1].append(weight)
+                if not directed:
+                    self.data[node2].append(node1)
+                    self.weight[node2].append(weight)
+            else:
+                # exclude weights
+                node1, node2 = edge
+                self.data[node1].append(node2)
+                if not directed:
+                    self.data[node2].append(node1)
+                    
+    def __repr__(self):
+        result = ""
+        if self.weighted:
+            for i, (nodes, weights) in enumerate(zip(self.data, self.weight)):
+                result += "{}: {}\n".format(i, list(zip(nodes, weights)))
+        else:
+            for i, nodes in enumerate(self.data):
+                result += "{}: {}\n".format(i, nodes)
+        return result
+    
+    def __str__(self):
+        return self.__repr__()
+    
+graph2 = Graph(num_nodes5, edges5, weighted = True)
+print(graph2)
+graph3 = Graph(num_nodes6, edges6, directed = True)
+print(graph3)
