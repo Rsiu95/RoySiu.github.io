@@ -1,3 +1,4 @@
+import sys
 '''
 Representing a graph:
 A node is generally the "point" at which you would like to visit
@@ -130,16 +131,58 @@ class Adjacency_Matrix:
         self.adjacency_matrix[node1][node2] = 0
         self.adjacency_matrix[node2][node1] = 0
     
-graph1 = Adjacency_Matrix(num_nodes, edges)
-print(graph1)
+graph2 = Adjacency_Matrix(num_nodes, edges)
+print(graph2)
 print("\n")
-graph1.add_edge(1,1)
+graph2.add_edge(1,1)
 print("Adjacency Matrix")
-print(graph1)
-graph1.remove_edge(1,1)
+print(graph2)
+graph2.remove_edge(1,1)
 print("\n")
-print(graph1)
+print(graph2)
 
 # Graph Traversal
 # Breadth-First Serach (BFS)
+
+'''
+Implement BFS given a source node in a graph
+    0 ----- 1 
+    |      /|\
+    |    /  |  \
+    |   /   |   2
+    |  /    |  /
+    | /     | /
+    4 ----- 3
+    
+'''
+
+def bfs(graph, root):
+    queue = []
+    visited = [False] * len(graph.adjacency_list)
+    
+    visited[root] = True
+    distance = [None] * len(graph.adjacency_list)
+    parent = [None] * len(graph.adjacency_list)
+    
+    queue.append(root)
+    distance[root] = 0
+    idx = 0
+    
+    while idx < len(queue):
+        # get first element that was just inserted and not dequeued
+        current = queue[idx]
+        idx += 1
+        
+        for node in graph.adjacency_list[current]:
+            if not visited[node]:
+                distance[node] = 1 + distance[current]
+                parent[node] = current
+                visited[node] = True
+                queue.append(node)
+    return queue, distance, parent
+
+print(graph1)
+# supposedly i need to keep a print graph1 statement before i print bfs because of
+# how stdout works in python apparently...? odd...
+print(bfs(graph1, 3))
 
