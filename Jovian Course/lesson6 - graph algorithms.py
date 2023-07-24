@@ -76,10 +76,70 @@ class Graph:
             self.adjacency_list[node2].remove(node1)
             
 graph1 = Graph(num_nodes, edges)
-
+print("Adjacency List")
 print(graph1)
 
+# Adjacency Matrix
+'''
+    0 ----- 1 
+    |      /|\
+    |    /  |  \
+    |   /   |   2
+    |  /    |  /
+    | /     | /
+    4 ----- 3
 
+first we create a matrix n*n, where n = no. nodes in the graph.
+To represent above graph as a matrix
+      0  1  2  3  4
+    0 0  1  0  0  1
+    1 1  0  1  1  1
+    2 0  1  0  1  0
+    3 0  1  1  0  1
+    4 1  1  0  1  0
+    
+Where a 1 in this matrix represent that there is an edge between the 2 nodes. i.e. node
+0 and 1 has an edge.
+'''
 
+class Adjacency_Matrix:
+    
+    def __init__(self, num_nodes, edges):
+        self.num_nodes = num_nodes
+        
+        # initialise an n * n matrix of 0
+        self.adjacency_matrix = [[0 for _ in range(num_nodes)] for _ in range(num_nodes)]
+        
+        # insert a 1 if there is an edge
+        for node1, node2 in edges:
+            # Add both nodes to each other as it is a bidirectional graph
+            self.adjacency_matrix[node1][node2] = 1
+            self.adjacency_matrix[node2][node1] = 1
+    
+    def __repr__(self):
+        return "\n".join(str(row) for row in self.adjacency_matrix)
+        
+    def __str__(self):
+        return self.__repr__()
+    
+    def add_edge(self, node1, node2):
+        self.adjacency_matrix[node1][node2] = 1
+        self.adjacency_matrix[node2][node1] = 1
+        
+    def remove_edge(self, node1, node2):
+        self.adjacency_matrix[node1][node2] = 0
+        self.adjacency_matrix[node2][node1] = 0
+    
+graph1 = Adjacency_Matrix(num_nodes, edges)
+print(graph1)
+print("\n")
+graph1.add_edge(1,1)
+print("Adjacency Matrix")
+print(graph1)
+graph1.remove_edge(1,1)
+print("\n")
+print(graph1)
 
+# Graph Traversal
+# Breadth-First Serach (BFS)
 
