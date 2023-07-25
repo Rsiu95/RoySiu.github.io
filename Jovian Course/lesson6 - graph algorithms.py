@@ -156,7 +156,7 @@ Implement BFS given a source node in a graph
     
 '''
 
-def bfs(graph, root):
+def bfs(graph, root): # Time: O(n + m)
     queue = []
     visited = [False] * len(graph.adjacency_list)
     
@@ -194,7 +194,7 @@ print('\n')
 
 # depth-first search (DFS) - use a stack (last in last out)
 
-def dfs(graph, root):
+def dfs(graph, root): # Time: O(n + m)
     stack = []
     visited = [False] * len(graph.adjacency_list)
     result = []
@@ -288,7 +288,7 @@ edges4 = [(0, 1, 4), (0, 2, 2), (1, 2, 5), (1, 3, 10), (2, 4, 3), (4, 3, 4), (3,
 graph4 = Graph(num_nodes4, edges4, weighted = True, directed = True)
 
 
-def shortest_path(graph, start_node, end_node):
+def shortest_path(graph, start_node, end_node): # Time: O(n^2 + m)
     
     # set all nodes to unvisited
     visited = [False] * len(graph.data)
@@ -327,6 +327,7 @@ def shortest_path(graph, start_node, end_node):
         update_distances(graph, current, distance, parent)
         
         # find the first unvisited node with the lowest distance
+        # can use min heap to improve efficiency
         next_node = pick_next_node(distance, visited)
         
         # add the next node to the queue if there is one
