@@ -70,6 +70,8 @@ T3 = {
 tests = [T0, T1, T2, T3]
 
 def subarray(nums, target, idx = 0):
+    '''
+    # first attempt
     sub_list = []
     sum = target
 
@@ -79,16 +81,33 @@ def subarray(nums, target, idx = 0):
         sub_list.append(nums[val])
         #print("checking", nums[idx:])
         print("sum", sum, "current idx", idx, "sublist", sub_list)
-        if sum < 0:
+        if sum < 0: # this doesn't work for negative numbers because we're currently 
+                    # only checking if it falls below 0, which could happen with negs
             idx += 1
             return subarray(nums, target, idx)
         elif sum == 0:
             #print("hi", sub_list)
             return sub_list
-
+        '''
+    
+    sub_list = []
+    sum = 0
+    for val in range(idx, len(nums)):
+        #print("sum",sum)
+        sum += nums[val]
+        sub_list.append(nums[val])
+        #print("checking", nums[idx:])
+        #print("sum", sum, "current idx", idx, "sublist", sub_list)
+        if sum > target: # this doesn't work for negative numbers because we're currently 
+                    # only checking if it falls below 0, which could happen with negs
+            idx += 1
+            return subarray(nums, target, idx)
+        elif sum == target:
+            #print("hi", sub_list)
+            return sub_list
     return -1
 
-print(subarray(nums, target))
+#print(subarray(nums, target))
 
 count = 0
 count_pass = 0
