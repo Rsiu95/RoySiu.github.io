@@ -121,3 +121,4 @@ elif door == "Blue" or door == "blue":
 else:
     time.sleep(1)
     print("You choose not to open any door and return home because you realise you're rich enough already. Game Over!")
+    
