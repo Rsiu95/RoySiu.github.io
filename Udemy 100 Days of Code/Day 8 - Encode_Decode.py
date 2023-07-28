@@ -25,27 +25,23 @@ def get_user_input():
     shift = int(input("Type the shift number:\n"))
     return [direction, text, shift]
 
-def encode_message(message, encryption):
-    message = user_input[1]
-    encrypted_message = []
-    for c in message:
-        encrypted_char = ord(c) + encryption
-        encrypted_message.append(chr(encrypted_char))
-    return "".join(encrypted_message)  + "\n"
+# def encode_message(message, encryption):
+#     message = user_input[1]
+#     encrypted_message = []
+#     for c in message:
+#         encrypted_char = ord(c) + encryption
+#         encrypted_message.append(chr(encrypted_char))
+#     return "".join(encrypted_message)  + "\n"
 
-def decode_message(message, decryption):
-    message = user_input[1]
-    decrypted_message = []
-    for c in message:
-        decrypted_char = ord(c) - decryption
-        decrypted_message.append(chr(decrypted_char))
-    return "".join(decrypted_message) + "\n"
+# def decode_message(message, decryption):
+#     message = user_input[1]
+#     decrypted_message = []
+#     for c in message:
+#         decrypted_char = ord(c) - decryption
+#         decrypted_message.append(chr(decrypted_char))
+#     return "".join(decrypted_message) + "\n"
 
 def caeser(direction, message, shift):
-    #message = user_input[0]
-    #shift = int(user_input[1])
-    #print(type(shift))
-    #direction = user_input[2]
     new_message = []
     if direction == "decode":
         shift *= -1
