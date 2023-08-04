@@ -1,8 +1,8 @@
 from turtle import Turtle
 from random import randint
 
-STARTING_POSITIONS = [(0, 0), (0, 0), (0, 0)]
-MOVE_DISTANCE = 20
+STARTING_POSITIONS = [(0, 0), (-20, 0), (-40, 0)]
+MOVE_DISTANCE = 10
 RIGHT, UP, LEFT, DOWN = 0, 90, 180, 270
 
 class Snake:
@@ -10,7 +10,7 @@ class Snake:
         self.snake_body = []
         self.create_snake()
         self.snake_head = self.snake_body[0]
-    
+
     def create_snake(self):
         for position in STARTING_POSITIONS:
             self.add_boddy(position)
