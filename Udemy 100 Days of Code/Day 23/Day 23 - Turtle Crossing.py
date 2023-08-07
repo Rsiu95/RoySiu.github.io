@@ -1,5 +1,5 @@
 from turtle import Screen
-from random import choice, uniform
+from random import choice
 import time
 
 import importlib
