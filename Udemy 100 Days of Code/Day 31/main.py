@@ -87,12 +87,12 @@ canvas.grid(row = 0, column = 0, columnspan = 2)
 
 # Tick Button
 tick_image = PhotoImage(file = images_path + "right.png")
-tick_button = Button(image = tick_image, highlightthickness = 0, borderwidth = 0, command = next_card)
+tick_button = Button(image = tick_image, highlightthickness = 0, borderwidth = 0, command = is_known)
 tick_button.grid(row = 1, column = 1)
 
 # X button
 x_image = PhotoImage(file = images_path + "wrong.png")
-x_button = Button(image = x_image, highlightthickness = 0, borderwidth = 0, command = is_known)
+x_button = Button(image = x_image, highlightthickness = 0, borderwidth = 0, command = next_card)
 x_button.grid(row = 1, column = 0)
 
 # start with next card
