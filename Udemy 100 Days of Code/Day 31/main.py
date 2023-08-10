@@ -1,57 +1,70 @@
 from tkinter import *
 import pandas
-from random import choice
-count = 5
-# Constants
+import random
+
 BACKGROUND_COLOR = "#B1DDC6"
-CARDBACK_COLOR = "#91c2af"
+
 file_path = "./Udemy 100 Days of Code/Day 31/"
 data_path = "./Udemy 100 Days of Code/Day 31/data/french_words.csv"
 images_path = "./Udemy 100 Days of Code/Day 31/images/"
 
-# Retrieve Data
-data = pandas.read_csv(data_path)
+current_card = {}
+to_learn = {}
 
-words = {row.French:row.English for (_, row) in data.iterrows()}
-chosen_word = choice(list(words.items()))
-#print(len(words))
-
-#remove_word = words.pop(chosen_word[0])
-
-known_words = {}
-# Store Known Words (Tick) > get new card
-def get_next_card(word):
-    words.pop(word[0])
-    global new_word 
-    new_word = choice(list(words.items()))
-    swap_card_back(chosen_word)
+try:
     
-
-# get new card > recycle that card
-def swap_to_card_back():
-    pass
-
-# Countdown timer
-def countdown(count):
-    if count > 0:
-        global timer
-        timer = window.after(1000, countdown, count - 1)
-        print(count)
-    else:
-        swap_card_front(chosen_word)
-
-# swap between card_front.png and card_back.png  
-def swap_card_front(word):
-    card_front.grid(row = 0, column = 0, columnspan = 3)
-    french_label.config(background = "white", text = word[0])
-    card_back.grid_forget()
-
-def swap_card_back(word):
-    card_back.grid(row = 0, column = 0, columnspan = 3)
-    french_label.config(background = CARDBACK_COLOR, text = word[1])
-    card_front.grid_forget()
-
+    # Try to see if there's a file for words to learn
+    data = pandas.read_csv(file_path + "data/words_to_learn.csv")
+except FileNotFoundError:
     
+    # Open the original data file if not found
+    original_data = pandas.read_csv(file_path + "data/french_words.csv")
+    print(original_data)
+    
+    # extract data
+    to_learn = original_data.to_dict(orient="records")
+else:
+    # extract data
+    to_learn = data.to_dict(orient="records")
+
+
+def next_card():
+    global current_card, flip_timer
+    
+    # cancel timer to reset on next card
+    window.after_cancel(flip_timer)
+    
+    # select a random card
+    current_card = random.choice(to_learn)
+    
+    # set canvas title, and word to be shown
+    canvas.itemconfig(card_title, text="French", fill="black")
+    canvas.itemconfig(card_word, text=current_card["French"], fill="black")
+    canvas.itemconfig(card_background, image=card_front_image)
+    
+    # flip the current card after 3000ms
+    flip_timer = window.after(3000, func=flip_card)
+
+
+def flip_card():
+    
+    # flip you card by changing canvas config
+    canvas.itemconfig(card_title, text="English", fill="white")
+    canvas.itemconfig(card_word, text=current_card["English"], fill="white")
+    canvas.itemconfig(card_background, image=card_back_image)
+
+def is_known():
+    # remove the current card from dict
+    to_learn.remove(current_card)
+    print(len(to_learn))
+    
+    # add it into new csv called to learn
+    data = pandas.DataFrame(to_learn)
+    data.to_csv(data_path + "words_to_learn.csv", index = False)
+    
+    # next card
+    next_card()
+
 # ------------ Create UI ------------ #
 
 # main window
@@ -59,35 +72,29 @@ window = Tk()
 window.title("Flashy")
 window.config(padx = 20, pady = 20, bg = BACKGROUND_COLOR)
 
-# card front
-card_front = Canvas(width = 800, height = 550, background = BACKGROUND_COLOR, highlightthickness = 0)
+# set timer
+flip_timer = window.after(3000, func = flip_card)
+
+# Create main canvas
+canvas = Canvas(width = 800, height = 526)
 card_front_image = PhotoImage(file = images_path + "card_front.png")
-card_front.create_image(400, 290, image = card_front_image)
-card_front_text = card_front.create_text(400, 200, text = "French", fill = "black", font = ("Arial", 24, "italic"))
-    
-
-# card back
-card_back = Canvas(width = 800, height = 550, background = BACKGROUND_COLOR, highlightthickness = 0)
 card_back_image = PhotoImage(file = images_path + "card_back.png")
-card_back.create_image(400, 290, image = card_back_image)
-card_back_text = card_back.create_text(400, 200, text = "English", fill = "black", font = ("Arial", 24, "italic"))
-card_back.grid(row = 0, column = 0, columnspan = 3)
- 
-
-# Language Labels
-french_label = Label(text = chosen_word[1], font = ("Arial", 26, "bold"), background = CARDBACK_COLOR, highlightthickness = 0)
-french_label.grid(column = 1, row = 0)
-
+card_background = canvas.create_image(400, 263, image = card_front_image)
+card_title = canvas.create_text(400, 150, text="", font=("Arial", 40, "italic"))
+card_word = canvas.create_text(400, 263, text="", font=("Arial", 60, "bold"))
+canvas.config(bg=BACKGROUND_COLOR, highlightthickness=0)
+canvas.grid(row = 0, column = 0, columnspan = 2)
 
 # Tick Button
 tick_image = PhotoImage(file = images_path + "right.png")
-tick_button = Button(image = tick_image, highlightthickness = 0, borderwidth = 0, command = swap_card_front(chosen_word))
-tick_button.grid(row = 1, column = 2)
+tick_button = Button(image = tick_image, highlightthickness = 0, borderwidth = 0, command = next_card)
+tick_button.grid(row = 1, column = 1)
 
 # X button
 x_image = PhotoImage(file = images_path + "wrong.png")
-x_button = Button(image = x_image, highlightthickness = 0, borderwidth = 0, command = swap_card_back(chosen_word))
+x_button = Button(image = x_image, highlightthickness = 0, borderwidth = 0, command = is_known)
 x_button.grid(row = 1, column = 0)
 
-countdown(count)
+# start with next card
+next_card()
 window.mainloop()
