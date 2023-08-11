@@ -5,7 +5,7 @@ import pandas
 
 # user details
 my_email = "emailfortesting100days.01@gmail.com"
-my_password = 
+my_password = "yxwyjtexeifjdecc"
 
 # get birthday dates, name and email from birthdays.csv
 birthday_data = pandas.read_csv("./Udemy 100 Days of Code/Day 32/birthdays.csv")
