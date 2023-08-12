@@ -4,6 +4,7 @@ import os
 from twilio.rest import Client
 from twilio.http.http_client import TwilioHttpClient
 
+#api_key = os.environ.get("OWM_API_KEY")
 API_KEY = "YOURAPIKEY"
 account_sid = "YOUR ACCOUNT SID"
 auth_token = "AUTH_TOKEN"
