@@ -1,15 +1,18 @@
 import requests
 import datetime as dt
+import os
+
+
 
 pixela_endpoint = "https://pixe.la/v1/users"
 
-TOKEN = ""
+TOKEN = os.environ.get('TOKEN')
 USERNAME = "roysiu"
 ID = "graph1"
 
 todays_date = dt.datetime.now()
 date = todays_date.strftime("%G%m%d")
-print(date)
+#print(date)
 pixela_parameters = {
     "token": TOKEN,
     "username": USERNAME,
@@ -18,8 +21,8 @@ pixela_parameters = {
 }
 
 # create user
-# response = requests.post(url = pixela_endpoint, json = pixela_parameters)
-# print(response.text)
+response = requests.post(url = pixela_endpoint, json = pixela_parameters)
+print(response.text)
 
 graph_endpoint = f"{pixela_endpoint}/{USERNAME}/graphs"
 
