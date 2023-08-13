@@ -46,5 +46,17 @@ pixel_config = {
     "quantity": "1"
 }
 
-response = requests.post(url = pixel_endpoint, json = pixel_config, headers = headers)
-print(response.text)
+# response = requests.post(url = pixel_endpoint, json = pixel_config, headers = headers)
+# print(response.text)
+
+pixel_update = f"{pixela_endpoint}/{USERNAME}/graphs/{ID}/{date}"
+update_config = {
+    "quantity": "5"
+}
+
+# response = requests.put(url = pixel_update, json = update_config, headers = headers)
+# print(response.text)
+
+# pixel_delete = f"{pixela_endpoint}/{USERNAME}/graphs/{ID}/{date}"
+
+# response = requests.delete(url = pixel_delete, headers = headers)
