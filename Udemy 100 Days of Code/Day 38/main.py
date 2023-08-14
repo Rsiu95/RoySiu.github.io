@@ -54,16 +54,6 @@ for data in response['exercises']:
 
 print(exercise_info)
 
-test_params = {
-    "workout" : {
-        'date': date,
-        'time': time,
-        'exercise': "Swimming",
-        'duration': "22",
-        'calories': "130"
-    }
-}
-
 sheety_headers = {
     "Authorization": f"Basic {SHEETY_AUTH}"
 }
