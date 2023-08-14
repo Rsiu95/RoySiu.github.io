@@ -1,16 +1,5 @@
 
-Udemy 100 Days of Code/Day 24/Mail_Merge/ReadyToSend/Appa.txt
-Udemy 100 Days of Code/Day 24/Mail_Merge/Names/invited_names.txt
-Udemy 100 Days of Code/Day 24/Mail_Merge/ReadyToSend/Aang.txt
-Udemy 100 Days of Code/Day 24/Mail_Merge/ReadyToSend/Katara.txt
-Udemy 100 Days of Code/Day 24/Mail_Merge/ReadyToSend/Momo.txt
-Udemy 100 Days of Code/Day 24/Mail_Merge/ReadyToSend/Sokka.txt
-Udemy 100 Days of Code/Day 24/Mail_Merge/ReadyToSend/Toph.txt
-Udemy 100 Days of Code/Day 24/Mail_Merge/ReadyToSend/Uncle Iroh.txt
-Udemy 100 Days of Code/Day 24/Mail_Merge/starting_letter.txt
-Udemy 100 Days of Code/Day 24/Mail_Merge/ReadyToSend/Zuko.txt
 *.csv
-Udemy 100 Days of Code/Day 29/user_login_details.txt
-Udemy 100 Days of Code/Day 30/user_login_details.json
 *.txt
-Udemy 100 Days of Code/Day 38/.env
+*.env
+
