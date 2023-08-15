@@ -1,9 +1,7 @@
 import requests
 from dotenv import load_dotenv
-import datetime as dt
 from flight_data import FlightData
 import os
-from pprint import pprint
 
 load_dotenv()
 
@@ -16,7 +14,6 @@ KIWI_HEADERS = {
 
 class FlightSearch:
     #This class is responsible for talking to the Flight Search API.
-
     def get_destination_code(self, city):
         location_params = {
             "term": city,
@@ -36,26 +33,49 @@ class FlightSearch:
             "date_to": return_date.strftime("%d/%m/%Y"),
             "nights_in_dst_from": 7,
             "nights_in_dst_to": 28,
+            "flight_type": "round",
             "one_for_city": 1,
             "max_stopovers": 0,
             "curr": "AUD"            
         }
+
         response = requests.get(url = KIWI_SEARCH, headers = KIWI_HEADERS, params = search_params)
         response.raise_for_status()
+
         try:
             data = response.json()['data'][0]
+            
         except IndexError:
-            print(f"No flights found for {destination_airport_code}.")
-            return None
-
-        flight_data = FlightData(
-            price = data["price"],
-            departure_airport_code = data["flyFrom"], 
-            departure_city = data["route"][0]["cityFrom"], 
-            destination_airport_code = data["flyTo"], 
-            destination_city = data["route"][0]["cityTo"],
-            return_date = data["route"][1]["local_departure"].strip("T")[0], 
-            departure_date = data["route"][0]["local_departure"].strip("T")[0]
-        )
-        print(f"{flight_data.destination_city}: ${flight_data.price}")
-        return flight_data
+            print(f"No cheaper flights found for {destination_airport_code}.")
+            search_params["max_stopovers"] = 1
+            response = requests.get(url = KIWI_SEARCH, headers = KIWI_HEADERS, params = search_params)
+            try:
+                data = response.json()['data'][0]
+            except IndexError:
+                return None
+            else:
+                flight_data = FlightData(
+                    price = data["price"],
+                    departure_city = data["route"][0]["cityFrom"],
+                    departure_airport_code = data["route"][0]["flyFrom"],
+                    destination_city = data["route"][1]["cityTo"],
+                    destination_airport_code = data["route"][1]["flyTo"],
+                    departure_date = data["route"][0]["local_departure"].split("T")[0],
+                    return_date = data["route"][2]["local_departure"].split("T")[0],
+                    stop_overs = 1,
+                    via_city = data["route"][0]["cityTo"]
+                )
+                print(f"{flight_data.destination_city}: ${flight_data.price}")
+                return flight_data
+        else:
+            flight_data = FlightData(
+                price = data["price"],
+                departure_airport_code = data["flyFrom"], 
+                departure_city = data["route"][0]["cityFrom"], 
+                destination_airport_code = data["flyTo"], 
+                destination_city = data["route"][0]["cityTo"],
+                return_date = data["route"][1]["local_departure"].split("T")[0], 
+                departure_date = data["route"][0]["local_departure"].split("T")[0]
+            )
+            print(f"{flight_data.destination_city}: ${flight_data.price}")
+            return flight_data
