@@ -4,16 +4,16 @@ from flight_data import FlightData
 from flight_search import FlightSearch
 from data_manager import DataManager
 from notification_manager import NotificationManager
+import datetime as dt
 
 sheet_data = DataManager()
 
-#pprint(sheet_data.prices['prices'])
+DEPARTURE_CITY_CODE = "MEL"
 
 for data in sheet_data.prices['prices']:
     city = FlightSearch().get_destination_code(data['city'])
     data['iataCode'] = city
 
-print(sheet_data.prices)
 for data in sheet_data.prices['prices']:
     id = data['id']
     new_data = {
@@ -22,3 +22,12 @@ for data in sheet_data.prices['prices']:
         }
     }
     sheet_data.update_sheet(new_data, id)
+
+tomorrow = dt.datetime.now() + dt.timedelta(days = 1)
+departure_range = tomorrow + dt.timedelta(days = 182.5)
+
+for code in sheet_data.prices['prices']:
+    flight_search_data = FlightSearch().search_flights(DEPARTURE_CITY_CODE, code["iataCode"], tomorrow, departure_range)
+    print("hi", flight_search_data)
+    if flight_search_data is not None and flight_search_data.price < code['lowestPrice']:
+        NotificationManager().send_message()
