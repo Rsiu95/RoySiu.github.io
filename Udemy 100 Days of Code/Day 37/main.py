@@ -7,7 +7,7 @@ import os
 pixela_endpoint = "https://pixe.la/v1/users"
 
 TOKEN = os.environ.get('TOKEN')
-USERNAME = "roysiu"
+USERNAME = os.environ.get('USERNAME')
 ID = "graph1"
 
 todays_date = dt.datetime.now()
