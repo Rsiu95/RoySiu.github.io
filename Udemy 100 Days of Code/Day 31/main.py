@@ -18,7 +18,7 @@ try:
 except FileNotFoundError:
     
     # Open the original data file if not found
-    original_data = pandas.read_csv(file_path + "data/french_words.csv")
+    original_data = pandas.read_csv(file_path + "data/japanese_words.csv")
     print(original_data)
     
     # extract data
@@ -38,8 +38,8 @@ def next_card():
     current_card = random.choice(to_learn)
     
     # set canvas title, and word to be shown
-    canvas.itemconfig(card_title, text="French", fill="black")
-    canvas.itemconfig(card_word, text=current_card["French"], fill="black")
+    canvas.itemconfig(card_title, text="Japanese", fill="black")
+    canvas.itemconfig(card_word, text=current_card["Japanese"], fill="black")
     canvas.itemconfig(card_background, image=card_front_image)
     
     # flip the current card after 3000ms
@@ -80,8 +80,8 @@ canvas = Canvas(width = 800, height = 526)
 card_front_image = PhotoImage(file = images_path + "card_front.png")
 card_back_image = PhotoImage(file = images_path + "card_back.png")
 card_background = canvas.create_image(400, 263, image = card_front_image)
-card_title = canvas.create_text(400, 150, text="", font=("Arial", 40, "italic"))
-card_word = canvas.create_text(400, 263, text="", font=("Arial", 60, "bold"))
+card_title = canvas.create_text(400, 150, text="", font=("Arial", 20, "italic"))
+card_word = canvas.create_text(400, 263, text="", font=("Arial", 30, "bold"))
 canvas.config(bg=BACKGROUND_COLOR, highlightthickness=0)
 canvas.grid(row = 0, column = 0, columnspan = 2)
 
