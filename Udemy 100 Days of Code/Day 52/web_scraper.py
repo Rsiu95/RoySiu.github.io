@@ -21,10 +21,14 @@ class HousePrices:
     def get_house_prices(self):
         prices = []
         for price in self.house_prices:
+            print(price)
             pattern = r"\$(\d{1,3}(?:,\d{3})*)(?=\+)"
             values = re.findall(pattern, price.getText())
             numeric_values = [int(num.replace(",","")) for num in values]
-            prices.append(min(numeric_values))
+            try:
+                prices.append(min(numeric_values))
+            except:
+                prices.append(numeric_values)
         return prices
 
     def get_links(self):
