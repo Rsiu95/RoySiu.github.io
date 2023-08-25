@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Blog</title>
+  <link rel="stylesheet" href="static/assets/style.css" />
+</head>
+
+<body>
+    {% for blog_post in posts: %}
+        {% if blog_post["id"] == 2: %}
+        
+            <h1>{{blog_post["title"]}}</h1>
+            <h1>{{blog_post["subtitle"]}}</h1>
+        {% endif %}
+    {% endfor %}
+    <a href = "{{ url_for('main')}}"> click me </a>
+    <footer>
+      <small>
+        Copyright {{year}}. Created by Roy Siu.
+      </small>
+    </footer>
+</body>
+
+
+
+</html>
