@@ -1,11 +1,17 @@
-from flask import Flask, render_template
-import requests
+from flask import Flask, render_template, request, redirect, url_for
+import requests, smtplib, os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+MY_EMAIL = os.getenv("EMAIL")
+MY_PASSWORD = os.getenv("PASSWORD")
 
 app = Flask(__name__)
 
 response = requests.get("https://api.npoint.io/c790b4d5cab58020d391")
 blog_data = response.json()
-print(blog_data)
+#print(blog_data)
 
 @app.route("/")
 @app.route("/index")
@@ -17,9 +23,26 @@ def home_page():
 def about_page():
     return render_template("about.html")
 
-@app.route("/contact")
+@app.route("/contact", methods=["GET", "POST"])
 def contact_page():
-    return render_template("contact.html")
+    if request.method == "POST":
+        name = request.form["name"]
+        email = request.form["email"]
+        phone = request.form["phone"]
+        message = request.form["message"]
+        print(f"Name: {name}\nEmail: {email}\nPhone: {phone}\nMessage: {message}")
+        
+        connection = smtplib.SMTP("smtp.gmail.com", port = 587)
+        connection.starttls()
+        connection.login(user = MY_EMAIL, password = MY_PASSWORD)
+        connection.sendmail(
+            from_addr = MY_EMAIL,
+            to_addrs = MY_EMAIL,
+            msg = f"Subject: BLOG CONTACT INFO \n\nName: {name}\nEmail: {email}\nPhone: {phone}\nMessage: {message}"
+        )
+        
+        return render_template("contact.html", msg_sent = True)
+    return render_template("contact.html", msg_sent = False)
 
 @app.route("/post")
 def post_page():
@@ -29,6 +52,8 @@ def post_page():
 def blogpost_page(number):
     number -= 1
     return render_template("blogpost.html", posts = blog_data[number])
+
+
 
 
 if __name__ == "__main__":
