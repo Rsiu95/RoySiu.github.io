@@ -26,11 +26,8 @@ def about_page():
 @app.route("/contact", methods=["GET", "POST"])
 def contact_page():
     if request.method == "POST":
-        name = request.form["name"]
-        email = request.form["email"]
-        phone = request.form["phone"]
-        message = request.form["message"]
-        print(f"Name: {name}\nEmail: {email}\nPhone: {phone}\nMessage: {message}")
+        data = request.form
+        print(f"Name: {data['name']}\nEmail: {data['email']}\nPhone: {data['phone']}\nMessage: {data['message']}")
         
         connection = smtplib.SMTP("smtp.gmail.com", port = 587)
         connection.starttls()
@@ -38,7 +35,7 @@ def contact_page():
         connection.sendmail(
             from_addr = MY_EMAIL,
             to_addrs = MY_EMAIL,
-            msg = f"Subject: BLOG CONTACT INFO \n\nName: {name}\nEmail: {email}\nPhone: {phone}\nMessage: {message}"
+            msg = f"Subject: BLOG CONTACT INFO \n\nName: {data['name']}\nEmail: {data['email']}\nPhone: {data['phone']}\nMessage: {data['message']}"
         )
         
         return render_template("contact.html", msg_sent = True)
