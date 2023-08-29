@@ -1,25 +1,12 @@
 {% extends 'base.html' %}
+{% from 'bootstrap5/form.html' import render_form %}
 
 {% block title %}Edit Movies{% endblock %}
 
 {% block content %}
 <div class="content">
   <h1 class="heading">{{movie_to_update.title}}</h1>
-
-  <div class="edit-card" >
-    <div class="edit-front" style="background-image: url('{{movie_to_update.image_url}}');"></div>
-  </div>
-
-    <h2 class="description">Edit Movie Rating</h2>
-  
-    <form action = "" id="update_rating" method = "POST">
-          <label for="rating">New Rating</label>
-          <input class="form-control" id="rating" type="text" placeholder="Enter new rating..." name="rating"/>
-
-          <div class="invalid-feedback" data-sb-feedback="rating:required">A rating is required.</div>
-        <div class="d-none" id="submitErrorMessage"><div class="text-center text-danger mb-3">Error adding movie!</div></div>
-    </br>
-        <button class="button" id="submitButton" type="submit">Update Rating</button>
-      </form>
+    <p class="description">Edit Movie Rating</p>
+        {{ render_form(form, novalidate=True) }}
   </div>
 {% endblock %}
