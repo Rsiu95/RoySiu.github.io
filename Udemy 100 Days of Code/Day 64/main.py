@@ -55,10 +55,10 @@ with app.app_context():
 @app.route("/", methods = ["POST", "GET"])
 def home():
     movies = db.session.execute(db.select(Movie).order_by(Movie.ranking)).scalars()
-    movie_ratings = [[movie.id, movie.rating] for movie in movies]
+    movie_ratings = [[movie.rating, movie.id] for movie in movies]
     movie_ratings.sort()
     for index, movie in enumerate(movie_ratings):
-        movie_to_update = db.get_or_404(Movie, movie[0])
+        movie_to_update = db.get_or_404(Movie, movie[1])
         movie_to_update.ranking = index + 1
         db.session.commit()
     movies = db.session.execute(db.select(Movie).order_by(Movie.ranking.desc())).scalars()
