@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Movie{% endblock %}
+
+{% block content %}
+<div class="content">
+    <h1 class="heading">Add a Movie</h1>
+        <form action = "/add" id="edit_movie" method = "POST">
+
+            <label for="title">Movie Title</label>
+            <input class="form-control" id="title" type="text" placeholder="Enter movie title..." name="title"/>
+                
+            <div class="invalid-feedback" data-sb-feedback="title:required">A movie title is required.</div>
+        </br>
+            <label for="year">Year of Release</label>
+            <input class="form-control" id="year" type="year" placeholder="Enter year of release..." name="release_date"/>
+            
+            <div class="invalid-feedback" data-sb-feedback="year:required">A year of release is required.</div>
+        </br>
+
+            <label for="rating">Movie Rating</label>
+            <input class="form-control" id="rating" type="rating" placeholder="Enter movie rating..." name="rating"/>
+            
+            <div class="invalid-feedback" data-sb-feedback="rating:required">A rating is required.</div>
+        </br>
+            <label for="review_comment">Movie Review</label>
+            <input class="form-control" id="review" type="review" placeholder="Enter movie review..." name="review_comment"/>
+            
+            <div class="invalid-feedback" data-sb-feedback="review:required">A review is required.</div>
+        </br>
+            <label for="movie_description">Short Description</label>
+            <input class="form-control" id="description" type="description" placeholder="Enter movie description..." name="movie_description"/>
+            
+            <div class="invalid-feedback" data-sb-feedback="description:required">A description is required.</div>
+        </br>
+        
+            <label for="movie_url">Movie Image</label>
+            <input class="form-control" id="movie_urk" type="movie_url" placeholder="Paste your movie image URL..." name="image_url"/>
+            
+            <div class="invalid-feedback" data-sb-feedback="movie_url:required">An image is required.</div>
+        </br>
+            <div class="d-none" id="submitErrorMessage"><div class="text-center text-danger mb-3">Error adding movie!</div></div>
+            <button class="button" id="submitButton" type="submit">Add Movie</button>
+        </form>
+</div>
+{% endblock %}
