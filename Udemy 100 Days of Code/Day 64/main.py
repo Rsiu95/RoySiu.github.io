@@ -55,6 +55,13 @@ with app.app_context():
 @app.route("/", methods = ["POST", "GET"])
 def home():
     movies = db.session.execute(db.select(Movie).order_by(Movie.ranking)).scalars()
+    
+    # more efficient way to sort, we take the len of all movies, set its ranking to the length of list - its index
+    # all_movies = movies.all()
+    # for i in range(len(all_movies)):
+    #     all_movies[i].ranking = len(all_movies) - i
+    #     print(all_movies[i])
+        
     movie_ratings = [[movie.rating, movie.id] for movie in movies]
     movie_ratings.sort()
     for index, movie in enumerate(movie_ratings):
