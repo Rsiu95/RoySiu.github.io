@@ -61,8 +61,12 @@
                 </div>
             </div>
             {% endfor %}
-            <div class="d-flex justify-content-end mb-4"><a class="btn btn-secondary text-uppercase" href="#!">Older Posts →</a></div>
-            <div class="d-flex justify-content-center mb-4"><a class="btn btn-primary text-uppercase" href={{ url_for('add_post') }}>Add Post</a></div>
+            <div class="d-flex justify-content-center mb-4">
+                <a class="btn btn-primary text-uppercase" href="{{ url_for('add_post') }}">Add Post</a>
+            </div>
+            <div class="d-flex justify-content-end mb-4">
+                <a class="btn btn-secondary text-uppercase" href="#!">Older Posts →</a>
+            </div>
         </div>
         {% include "footer.html" %}
         <!-- Footer-->
