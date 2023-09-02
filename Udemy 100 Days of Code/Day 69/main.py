@@ -8,10 +8,11 @@ from flask_sqlalchemy import SQLAlchemy
 from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.orm import relationship
+from sqlalchemy import ForeignKey
 import smtplib, os
 from dotenv import load_dotenv
 # Import your forms from the forms.py
-from forms import CreatePostForm, RegisterForm, LoginForm
+from forms import CreatePostForm, RegisterForm, LoginForm, CommentForm
 
 # Environment Variables
 load_dotenv()
@@ -33,8 +34,19 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../Udemy 100 Days of Code/Day
 db = SQLAlchemy()
 db.init_app(app)
 
+# Configure Tables
+class User(UserMixin, db.Model):
+    __tablename__ = "users"
+    id = db.Column(db.Integer, primary_key=True)
+    first_name = db.Column(db.String(1000))
+    last_name = db.Column(db.String(1000))
+    username = db.Column(db.String(100), unique=True)
+    email = db.Column(db.String(100), unique=True)
+    password = db.Column(db.String(100))
+    
+    posts = relationship("BlogPost", back_populates="author")
+    comments = relationship("Comments", back_populates="comment_author")
 
-# CONFIGURE TABLES
 class BlogPost(db.Model):
     __tablename__ = "blog_posts"
     id = db.Column(db.Integer, primary_key=True)
@@ -42,16 +54,24 @@ class BlogPost(db.Model):
     subtitle = db.Column(db.String(250), nullable=False)
     date = db.Column(db.String(250), nullable=False)
     body = db.Column(db.Text, nullable=False)
-    author = db.Column(db.String(250), nullable=False)
+    
+    author_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    author = relationship("User", back_populates="posts")
+    
     img_url = db.Column(db.String(250), nullable=False)
+    comments = relationship("Comments", back_populates="parent_post")
 
-class User(UserMixin, db.Model):
+class Comments(db.Model):
+    __tablename__ = "user_comments"
     id = db.Column(db.Integer, primary_key=True)
-    first_name = db.Column(db.String(1000))
-    last_name = db.Column(db.String(1000))
-    username = db.Column(db.String(100), unique=True)
-    email = db.Column(db.String(100), unique=True)
-    password = db.Column(db.String(100))
+    author_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    comment_author = relationship("User", back_populates="comments")
+    
+    
+    parent_id = db.Column(db.Integer, db.ForeignKey("blog_posts.id"))
+    parent_post = relationship("BlogPost", back_populates="comments")
+    
+    body = db.Column(db.Text)   
     
 def admin_only(f):
     @wraps(f)
@@ -144,7 +164,9 @@ def logout():
 def get_all_posts():
     result = db.session.execute(db.select(BlogPost))
     posts = result.scalars().all()
-    
+
+    for post in posts:
+        print(post.author.username, post.author_id)
     if current_user.is_authenticated and current_user.get_id() == "1":
         return render_template("index.html", all_posts=posts, logged_in=current_user.is_authenticated, admin = True)
         
@@ -155,7 +177,8 @@ def get_all_posts():
 @app.route("/post/<int:post_id>")
 def show_post(post_id):
     requested_post = db.get_or_404(BlogPost, post_id)
-    return render_template("post.html", post=requested_post, logged_in=current_user.is_authenticated)
+    form = CommentForm()
+    return render_template("post.html", post=requested_post, logged_in=current_user.is_authenticated, form = form)
 
 
 # TODO: Use a decorator so only an admin user can create a new post

@@ -1,5 +1,5 @@
 {% include "header.html" %}
-
+{% from "bootstrap5/form.html" import render_form %}
 <!-- Page Header-->
 <header class="masthead" style="background-image: url('{{post.img_url}}')">
   <div class="container position-relative px-4 px-lg-5">
@@ -10,7 +10,7 @@
           <h2 class="subheading">{{ post.subtitle }}</h2>
           <span class="meta"
             >Posted by
-            <a href="#">{{ post.author }}</a>
+            <a href="#">{{ post.author.username }}</a>
             on {{ post.date }}
           </span>
         </div>
@@ -36,6 +36,8 @@
 
         <!-- Comments Area -->
         <!-- TODO: Add a CKEditor for commenting below -->
+        {{ ckeditor.load() }} {{ ckeditor.config(name='body') }}
+        {{ render_form(form, novalidate=True, button_map={"submit": "primary"}) }}
         <div class="comment">
           <!-- TODO: Show all the comments on a post -->
           <ul class="commentList">
@@ -43,6 +45,7 @@
               <div class="commenterImage">
                 <img src="../static/assets/img/default-profile.jpg" />
               </div>
+              
               <div class="commentText">
                 <p>Some comment</p>
                 <span class="date sub-text">comment author name</span>
