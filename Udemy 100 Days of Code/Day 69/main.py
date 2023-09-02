@@ -174,11 +174,30 @@ def get_all_posts():
 
 
 # TODO: Allow logged-in users to comment on posts
-@app.route("/post/<int:post_id>")
+@app.route("/post/<int:post_id>", methods = ["POST","GET"])
 def show_post(post_id):
     requested_post = db.get_or_404(BlogPost, post_id)
     form = CommentForm()
-    return render_template("post.html", post=requested_post, logged_in=current_user.is_authenticated, form = form)
+    is_admin = False
+    if current_user.get_id() == "1":
+        is_admin = True
+        
+    if form.validate_on_submit():
+        if current_user.is_authenticated:
+            comment = request.form.get("comment_field")
+            new_comment = Comments(
+                body = comment,
+                author_id = current_user.get_id(),
+                parent_id = post_id
+                )
+            db.session.add(new_comment)
+            db.session.commit()
+            render_template("post.html", post=requested_post, logged_in=current_user.is_authenticated, form = form, is_admin = is_admin)
+            
+        else:
+            flash("Please log in or register to comment")
+            return redirect(url_for('login'))
+    return render_template("post.html", post=requested_post, logged_in=current_user.is_authenticated, form = form, is_admin = is_admin)
 
 
 # TODO: Use a decorator so only an admin user can create a new post

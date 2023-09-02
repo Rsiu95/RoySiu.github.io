@@ -23,9 +23,9 @@ include "header.html" %}
     <div class="row">
       {% with messages = get_flashed_messages() %}
       {% if messages %}
-        <p class="flash-messages">
+        <p class="flash-text">
           {% for message in messages %}
-            <p class="flash-message">{{ message }}</p>
+            <p class="flash-text">{{ message }}</p>
           {% endfor %}
         </p>
       {% endif %}
