@@ -1,5 +1,5 @@
 from datetime import date
-from flask import Flask, abort, render_template, redirect, url_for, flash
+from flask import Flask, abort, render_template, redirect, url_for, flash, request
 from flask_bootstrap import Bootstrap5
 from flask_ckeditor import CKEditor
 from flask_gravatar import Gravatar
@@ -8,33 +8,28 @@ from flask_sqlalchemy import SQLAlchemy
 from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.orm import relationship
+import requests, smtplib, os
+from dotenv import load_dotenv
 # Import your forms from the forms.py
-from forms import CreatePostForm
+from forms import CreatePostForm, RegisterForm, LoginForm
 
-
-'''
-Make sure the required packages are installed: 
-Open the Terminal in PyCharm (bottom left). 
-
-On Windows type:
-python -m pip install -r requirements.txt
-
-On MacOS type:
-pip3 install -r requirements.txt
-
-This will install the packages from the requirements.txt for this project.
-'''
+# Environment Variables
+load_dotenv()
+MY_EMAIL = os.getenv("EMAIL")
+MY_PASSWORD = os.getenv("PASSWORD")
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
+app.config['SECRET_KEY'] = SECRET_KEY
 ckeditor = CKEditor(app)
 Bootstrap5(app)
 
-# TODO: Configure Flask-Login
-
+# Configure Flask-Login
+login_manager = LoginManager()
+login_manager.init_app(app)
 
 # CONNECT TO DB
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../Udemy 100 Days of Code/Day 69/instance/posts.db'
 db = SQLAlchemy()
 db.init_app(app)
 
@@ -50,28 +45,92 @@ class BlogPost(db.Model):
     author = db.Column(db.String(250), nullable=False)
     img_url = db.Column(db.String(250), nullable=False)
 
-
-# TODO: Create a User table for all your registered users. 
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    first_name = db.Column(db.String(1000))
+    last_name = db.Column(db.String(1000))
+    username = db.Column(db.String(100), unique=True)
+    email = db.Column(db.String(100), unique=True)
+    password = db.Column(db.String(100))
+    
 
 
 with app.app_context():
     db.create_all()
 
+@login_manager.user_loader
+def load_user(user_id):
+    return db.session.get(User, user_id)
 
-# TODO: Use Werkzeug to hash the user's password when creating a new user.
-@app.route('/register')
+
+# Register route
+@app.route('/register', methods = ["POST", "GET"])
 def register():
-    return render_template("register.html")
+    form = RegisterForm()
+    if form.validate_on_submit():
+        
+        # Check for existing username
+        used_username = db.session.execute(db.select(User).where(User.username == request.form.get('username')))
+        user = used_username.scalar()
+        if user:
+            flash("Username already exists.")
+            return redirect(url_for('register', logged_in=current_user.is_authenticated))        
+        
+        # Check for existing email
+        used_email = db.session.execute(db.select(User).where(User.email == request.form.get('email')))
+        user_email = used_email.scalar()
+        if user_email:
+
+            flash("Email already exists.")
+            return redirect(url_for('register', logged_in=current_user.is_authenticated))
+        
+        temp_password = request.form.get('password')
+        # Use Werkzeug to hash the user's password when creating a new user.
+        hashed_password = generate_password_hash(temp_password, method="pbkdf2", salt_length=16)
+        new_user = User(
+            first_name = request.form.get('fname'),
+            last_name = request.form.get('lname'),
+            username = request.form.get('username'),
+            email = request.form.get('email'),
+            password = hashed_password
+        )
+       
+        db.session.add(new_user)
+        db.session.commit()
+        login_user(new_user)
+        return redirect(url_for('get_all_posts', logged_in=current_user.is_authenticated))
+       
+            
+    return render_template("register.html", form = form, logged_in=current_user.is_authenticated)
 
 
 # TODO: Retrieve a user from the database based on their email. 
-@app.route('/login')
+@app.route('/login', methods = ["POST", "GET"])
 def login():
-    return render_template("login.html")
+    form = LoginForm()
+    if request.method == "POST":
+        username = request.form.get('username')
+        password = request.form.get('password')
+        
+        result = db.session.execute(db.select(User).where(User.username == username))
+        user_username = result.scalar()
+        
+        if not user_username:
+            flash("No such Username, please try again.")
+            return redirect(url_for('login'))
+        elif not check_password_hash(user_username.password, password):
+            flash("Password incorrect, please try again.")
+            return redirect(url_for('login'))
+        else:
+            login_user(user_username)
+            return redirect(url_for('get_all_posts', logged_in=current_user.is_authenticated))
+        
+    return render_template("login.html", form = form, logged_in=current_user.is_authenticated)
 
 
 @app.route('/logout')
 def logout():
+    logout_user()
     return redirect(url_for('get_all_posts'))
 
 
@@ -79,7 +138,7 @@ def logout():
 def get_all_posts():
     result = db.session.execute(db.select(BlogPost))
     posts = result.scalars().all()
-    return render_template("index.html", all_posts=posts)
+    return render_template("index.html", all_posts=posts, logged_in=current_user.is_authenticated)
 
 
 # TODO: Allow logged-in users to comment on posts
@@ -136,18 +195,32 @@ def delete_post(post_id):
     post_to_delete = db.get_or_404(BlogPost, post_id)
     db.session.delete(post_to_delete)
     db.session.commit()
-    return redirect(url_for('get_all_posts'))
+    return redirect(url_for('get_all_posts', logged_in=current_user.is_authenticated))
 
 
 @app.route("/about")
 def about():
-    return render_template("about.html")
+    return render_template("about.html", logged_in=current_user.is_authenticated)
 
 
-@app.route("/contact")
+@app.route("/contact", methods=["GET", "POST"])
 def contact():
-    return render_template("contact.html")
+    if request.method == "POST":
+        data = request.form
+        print(f"Name: {data['name']}\nEmail: {data['email']}\nPhone: {data['phone']}\nMessage: {data['message']}")
+        
+        connection = smtplib.SMTP("smtp.gmail.com", port = 587)
+        connection.starttls()
+        connection.login(user = MY_EMAIL, password = MY_PASSWORD)
+        connection.sendmail(
+            from_addr = MY_EMAIL,
+            to_addrs = MY_EMAIL,
+            msg = f"Subject: BLOG CONTACT INFO \n\nName: {data['name']}\nEmail: {data['email']}\nPhone: {data['phone']}\nMessage: {data['message']}"
+        )
+        
+        return render_template("contact.html", msg_sent = True, logged_in=current_user.is_authenticated)
+    return render_template("contact.html", msg_sent = False, logged_in=current_user.is_authenticated)
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5002)
+    app.run(debug=True)

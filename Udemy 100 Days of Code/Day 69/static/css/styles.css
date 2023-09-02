@@ -10558,6 +10558,8 @@ hr {
 
 p {
   margin: 2rem 0;
+  color: red;
+  text-align: center;
 }
 p a {
   text-decoration: underline;
