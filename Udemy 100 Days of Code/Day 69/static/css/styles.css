@@ -10556,10 +10556,13 @@ hr {
   opacity: 1;
 }
 
-p {
-  margin: 2rem 0;
+.flash-text{
   color: red;
   text-align: center;
+}
+
+p {
+  margin: 2rem 0;
 }
 p a {
   text-decoration: underline;
