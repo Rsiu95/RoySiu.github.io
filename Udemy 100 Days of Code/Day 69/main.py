@@ -72,6 +72,15 @@ class Comments(db.Model):
     parent_post = relationship("BlogPost", back_populates="comments")
     
     body = db.Column(db.Text)   
+
+gravatar = Gravatar(app,
+                    size=100,
+                    rating='g',
+                    default='retro',
+                    force_default=False,
+                    force_lower=False,
+                    use_ssl=False,
+                    base_url=None)
     
 def admin_only(f):
     @wraps(f)
@@ -177,6 +186,7 @@ def get_all_posts():
 @app.route("/post/<int:post_id>", methods = ["POST","GET"])
 def show_post(post_id):
     requested_post = db.get_or_404(BlogPost, post_id)
+    post_comments = requested_post.comments
     form = CommentForm()
     is_admin = False
     if current_user.get_id() == "1":
@@ -192,12 +202,15 @@ def show_post(post_id):
                 )
             db.session.add(new_comment)
             db.session.commit()
-            render_template("post.html", post=requested_post, logged_in=current_user.is_authenticated, form = form, is_admin = is_admin)
+            return redirect(url_for("show_post", post_id = requested_post.id, post=requested_post, logged_in=current_user.is_authenticated, form = form, is_admin = is_admin,
+                                   post_comments = post_comments))
             
         else:
             flash("Please log in or register to comment")
             return redirect(url_for('login'))
-    return render_template("post.html", post=requested_post, logged_in=current_user.is_authenticated, form = form, is_admin = is_admin)
+        
+    return render_template("post.html", post=requested_post, logged_in=current_user.is_authenticated, form = form, is_admin = is_admin,
+                                   post_comments = post_comments)
 
 
 # TODO: Use a decorator so only an admin user can create a new post

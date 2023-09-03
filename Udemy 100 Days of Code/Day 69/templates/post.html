@@ -42,18 +42,22 @@
         
         <div class="comment">
           <!-- TODO: Show all the comments on a post -->
+          {% for comment in post_comments %}
           <ul class="commentList">
             <li>
               <div class="commenterImage">
-                <img src="../static/assets/img/default-profile.jpg" />
+                <img src="{{comment.comment_author.username | gravatar}}" />
+                
               </div>
               
+              
               <div class="commentText">
-                <p>Some comment</p>
-                <span class="date sub-text">comment author name</span>
+                <p>{{comment.body|safe}}</p>
+                <span class="date sub-text">{{comment.comment_author.username}}</span>
               </div>
             </li>
           </ul>
+          {% endfor %}
         </div>
       </div>
     </div>
