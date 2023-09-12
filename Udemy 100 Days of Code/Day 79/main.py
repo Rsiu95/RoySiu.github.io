@@ -2,6 +2,7 @@ import pandas as pd
 import seaborn as sns
 import plotly.express as px
 import matplotlib.pyplot as plt
+import geopandas as gpd
 import numpy as np
 
 df_data = pd.read_csv('C:/Users/RSiu9/OneDrive/Documents/GitHub/RoySiu.github.io/Udemy 100 Days of Code/Day 79/nobel_prize_data.csv')
@@ -80,14 +81,84 @@ v_bar_split.update_layout(xaxis_title='Nobel Prize Category',
                           yaxis_title='Number of Prizes')
 v_bar_split.show()
 
-prizes_won_per_year = df_data.groupby('year').agg({'prize': pd.Series.count})
-print(prizes_won_per_year)
-rolling_prizes = prizes_won_per_year.rolling(window=5).mean()
+# prizes_won_per_year = df_data.groupby('year').agg({'prize': pd.Series.count})
+# print(prizes_won_per_year)
+# moving_average = prizes_won_per_year.rolling(window=5).mean()
 
-plt.title('Prizes Won per Year')
-plt.xlabel('Date', fontsize=14)
-plt.ylabel('Number of Prizes', fontsize=14)
-plt.ylim(0, 35000)
+# plt.figure(figsize=(16,8), dpi=200)
+# plt.title('Number of Nobel Prizes Awarded per Year', fontsize=18)
+# plt.yticks(fontsize=14)
+# plt.xticks(ticks=np.arange(1900, 2021, step=5), 
+#            fontsize=14, 
+#            rotation=45)
+ 
+# ax = plt.gca() # get current axis
+# ax.set_xlim(1900, 2020)
+ 
+# ax.scatter(x=prizes_won_per_year.index, 
+#            y=prizes_won_per_year.values, 
+#            c='dodgerblue',
+#            alpha=0.7,
+#            s=100,)
+ 
+# ax.plot(prizes_won_per_year.index, 
+#         moving_average.values, 
+#         c='crimson', 
+#         linewidth=3,)
+ 
+# plt.show()
 
-plt.plot(rolling_prizes.index, rolling_prizes.values)
-plt.legend(fontsize=8) 
+# share_per_year = df_data.groupby('year').share_pct.mean()
+# share_moving_average = share_per_year.rolling(window=5).mean()
+
+# plt.figure(figsize=(16,8), dpi=200)
+# plt.title('Number of Nobel Prizes Awarded per Year', fontsize=18)
+# plt.yticks(fontsize=14)
+# plt.xticks(ticks=np.arange(1900, 2021, step=5), 
+#            fontsize=14, 
+#            rotation=45)
+ 
+# ax1 = plt.gca()
+# ax2 = ax1.twinx()
+# ax1.set_xlim(1900, 2020)
+ 
+# # Can invert axis
+# ax2.invert_yaxis()
+ 
+# ax1.scatter(x=prizes_won_per_year.index, 
+#            y=prizes_won_per_year.values, 
+#            c='dodgerblue',
+#            alpha=0.7,
+#            s=100,)
+ 
+# ax1.plot(prizes_won_per_year.index, 
+#         moving_average.values, 
+#         c='crimson', 
+#         linewidth=3,)
+ 
+# ax2.plot(prizes_won_per_year.index, 
+#         share_moving_average.values, 
+#         c='grey', 
+#         linewidth=3,)
+ 
+# plt.show()
+
+top20_countries = df_data.groupby('birth_country_current').count().prize.sort_values(ascending=True).tail(20)
+print(top20_countries)
+
+# top20_countries2 = df_data.groupby('birth_country').count().prize
+# print(top20_countries2)
+
+# top20_countries3 = df_data.groupby('organization_country').count().prize
+# print(top20_countries3)
+
+h_bar = px.bar(x = top20_countries,
+               y = top20_countries.index,
+               orientation='h',
+               color=top20_countries)
+
+h_bar.update_layout(xaxis_title='Number of Prizes', yaxis_title='Countries')
+ 
+h_bar.show()
+
+# TODO Challenge 2
