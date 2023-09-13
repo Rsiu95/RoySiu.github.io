@@ -21,11 +21,15 @@ print(len(duplicated_rows))
 # check if any na values
 print(df_data.isna().values.any())
 
+# check number of Na values per column
 for col in df_data.columns:
     print(f"number of NaNs in {col} row: {len(df_data[df_data[col].isna()==True])}")
 # or just use df_data.isna().sum()    
 
+# convert birth_date column to datetime
 df_data['birth_date'] = pd.to_datetime(df_data['birth_date'])
+
+# calculate the share percentage each person won
 separated_values = df_data.prize_share.str.split('/', expand=True)
 numerator = pd.to_numeric(separated_values[0])
 denomenator = pd.to_numeric(separated_values[1])
@@ -33,6 +37,7 @@ df_data['share_pct'] = numerator / denomenator
 
 print(df_data.info())
 
+# calculate the number of winners by gender and graph
 genders = df_data.sex.value_counts()
 fig = px.pie(labels=genders.index,
             values=genders.values,
@@ -48,11 +53,13 @@ fig.show()
 print(df_data.sort_values('year')[df_data.sex == "Female"][:3])
 
 print(df_data.full_name.duplicated().values.any())
+# check if anyone has won more than 1 nobel prize
 duplicated_names = df_data.full_name[df_data.full_name.duplicated()]
 print(duplicated_names)
 
 print(df_data.category.unique())
 
+# graph the number of prizes won per category
 prizes_per_category = df_data.category.value_counts()
 v_bar = px.bar(
         x = prizes_per_category.index,
@@ -68,6 +75,7 @@ v_bar.show()
  
 print(df_data.sort_values('year')[df_data.category == "Economics"]['full_name'])
 
+# graph the number of prizes won per category, per gender
 df_men_vs_women = df_data.groupby(['category', 'sex'], as_index=False).agg({'prize': pd.Series.count})
 print(df_men_vs_women)
 
@@ -81,6 +89,7 @@ v_bar_split.update_layout(xaxis_title='Nobel Prize Category',
                           yaxis_title='Number of Prizes')
 v_bar_split.show()
 
+# graph the number of prizes won per year
 prizes_won_per_year = df_data.groupby('year').agg({'prize': pd.Series.count})
 print(prizes_won_per_year)
 moving_average = prizes_won_per_year.rolling(window=5).mean()
@@ -91,7 +100,8 @@ plt.yticks(fontsize=14)
 plt.xticks(ticks=np.arange(1900, 2021, step=5), 
            fontsize=14, 
            rotation=45)
- 
+
+# plot the number of prizes per 5 years
 ax = plt.gca() # get current axis
 ax.set_xlim(1900, 2020)
  
@@ -108,6 +118,7 @@ ax.plot(prizes_won_per_year.index,
  
 plt.show()
 
+# plot the share percentage per 5 years
 share_per_year = df_data.groupby('year').share_pct.mean()
 share_moving_average = share_per_year.rolling(window=5).mean()
 
@@ -118,11 +129,12 @@ plt.xticks(ticks=np.arange(1900, 2021, step=5),
            fontsize=14, 
            rotation=45)
  
+# plot the share percentage against the number of prizes won per 5 years
 ax1 = plt.gca()
 ax2 = ax1.twinx()
 ax1.set_xlim(1900, 2020)
  
-# Can invert axis
+# Can invert axis to align the graphs
 ax2.invert_yaxis()
  
 ax1.scatter(x=prizes_won_per_year.index, 
@@ -143,15 +155,19 @@ ax2.plot(prizes_won_per_year.index,
  
 plt.show()
 
+# calculate the top 20 winners by current birth country
 top20_countries = df_data.groupby('birth_country_current').count().prize.sort_values(ascending=True).tail(20)
 print(top20_countries)
 
+# calculate the top 20 winners by birth country
 top20_countries2 = df_data.groupby('birth_country').count().prize
 print(top20_countries2)
 
+# calculate the top 20 winners by organization country
 top20_countries3 = df_data.groupby('organization_country').count().prize
 print(top20_countries3)
 
+# graph the number of prizes per country
 h_bar = px.bar(x = top20_countries,
                y = top20_countries.index,
                orientation='h',
@@ -161,6 +177,7 @@ h_bar.update_layout(xaxis_title='Number of Prizes', yaxis_title='Countries')
  
 h_bar.show()
 
+# create a choropleth graph of the number of prizes won by country (uses ISO values)
 top20_iso = df_data.groupby(['ISO'], as_index=False).agg({'prize': pd.Series.count})
 print(top20_iso)
 
@@ -170,15 +187,18 @@ fig = px.choropleth(top20_iso, locations="ISO",
                     color_continuous_scale=px.colors.sequential.matter)
 fig.show()
 
+# find the number of prizes won per category per country
 country_per_category = df_data.groupby(['birth_country_current','category'], as_index=False).agg({'prize': pd.Series.count})
 country_per_category.sort_values(by='prize', ascending=False, inplace=True)
 print(country_per_category)
 
+# merge the above dataframe with the top20 countries find total number of prizes won per country as well as prizes won per category per country
 merged_df = pd.merge(country_per_category, top20_countries, on='birth_country_current')
 merged_df.columns = ['birth_country_current', 'category', 'cat_prize', 'total_prize'] 
 merged_df.sort_values(by='total_prize', inplace=True)
 print(merged_df)
 
+# graph the data
 h_bar_split = px.bar(x = merged_df.cat_prize,
                      y = merged_df.birth_country_current,
                      color = merged_df.category,
@@ -189,15 +209,18 @@ h_bar_split.update_layout(xaxis_title='Number of Prizes',
                           yaxis_title='Countries')
 h_bar_split.show()
 
+# calculate the number of prizes won per year per country over time
 country_over_time = df_data.groupby(['year','birth_country_current'], as_index=False).agg({'prize': pd.Series.count})
 
 print(country_over_time)
 
+# find the cumulative prizes won in total each year since hte beginning
 cumulative_prizes = country_over_time.groupby(by=['birth_country_current',
                                               'year']).sum().groupby(level=[0]).cumsum()
 cumulative_prizes.reset_index(inplace=True) 
 print(cumulative_prizes)
 
+# graph
 l_chart = px.line(cumulative_prizes,
                   x='year', 
                   y='prize',
@@ -209,6 +232,7 @@ l_chart.update_layout(xaxis_title='Year',
  
 l_chart.show()
 
+# calculate and graph the number of prizes won per organisation
 organisation_prizes = df_data.groupby(['organization_name'], as_index=False).agg({'prize': pd.Series.count})
 organisation_prizes.sort_values(by='prize', inplace=True)
 organisation_prizes = organisation_prizes[-20:]
@@ -222,7 +246,7 @@ organisation_prizes_graph = px.bar(x=organisation_prizes.prize,
 
 organisation_prizes_graph.show()
 
-
+# calculate and graph the number of prizes won per organisation city
 city_prizes = df_data.groupby(['organization_city'], as_index=False).agg({'prize': pd.Series.count})
 city_prizes.sort_values(by='prize', inplace=True)
 city_prizes = city_prizes[-20:]
@@ -236,6 +260,7 @@ city_prizes_graph = px.bar(x=city_prizes.prize,
 
 city_prizes_graph.show()
 
+# calculate and graph the number of prizes won per birth city
 birth_city_prizes = df_data.groupby(['birth_city'], as_index=False).agg({'prize': pd.Series.count})
 birth_city_prizes.sort_values(by='prize', inplace=True)
 birth_city_prizes = birth_city_prizes[-20:]
@@ -250,11 +275,12 @@ birth_city_prizes_graph = px.bar(x=birth_city_prizes.prize,
 
 birth_city_prizes_graph.show()
 
-
+# create a dataframe based on how many prizes won per organisation country, organisation city and the org name
 sun_df = df_data.groupby(['organization_country', 'organization_city', 'organization_name'], as_index=False).agg({'prize': pd.Series.count})
 
 print(sun_df)
 
+# sunburst with above df
 fig = px.sunburst(sun_df, path=['organization_country', 'organization_city', 'organization_name'], 
                     values='prize',
                     title='Where do Discoveries Take Place?',
@@ -266,14 +292,17 @@ fig.update_layout(xaxis_title='Number of Prizes',
  
 fig.show()
 
+# calculate the age of the winner
 df_data['year'] = pd.to_datetime(df_data['year'], format='%Y')
 df_data['year'] = df_data['year'].dt.year
 df_data['birth_date'] = df_data['birth_date'].dt.year
 df_data['winning_age'] = df_data['year'].subtract(df_data['birth_date'])
 
+# create the winning age dataframe to identify ages of each winner
 winner_age = df_data.groupby(['full_name', 'winning_age'], as_index=False).agg({'prize': pd.Series.count})
 df_data.sort_values('winning_age', inplace=True, ascending=False)
 
+# create histogram plot
 sns.histplot(data=df_data,
              x=df_data.winning_age,
              bins=30)
@@ -292,12 +321,14 @@ with sns.axes_style("whitegrid"):
  
 plt.show()
 
+# create a boxplot of winning age against category
 plt.figure(figsize=(8,4), dpi=200)
 sns.boxplot(data=df_data,
                 x='category',
                 y='winning_age',
                )
 plt.show()
+
 
 with sns.axes_style('whitegrid'):
     sns.lmplot(data=df_data,
