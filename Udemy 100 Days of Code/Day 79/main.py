@@ -2,7 +2,6 @@ import pandas as pd
 import seaborn as sns
 import plotly.express as px
 import matplotlib.pyplot as plt
-import geopandas as gpd
 import numpy as np
 
 df_data = pd.read_csv('C:/Users/RSiu9/OneDrive/Documents/GitHub/RoySiu.github.io/Udemy 100 Days of Code/Day 79/nobel_prize_data.csv')
