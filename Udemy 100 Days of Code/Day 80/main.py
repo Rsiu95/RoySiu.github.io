@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-
+import plotly.express as px
 
 df_monthly = pd.read_csv('C:/Users/RSiu9/OneDrive/Documents/GitHub/RoySiu.github.io/Udemy 100 Days of Code/Day 80/monthly_deaths.csv')
 df_yearly = pd.read_csv('C:/Users/RSiu9/OneDrive/Documents/GitHub/RoySiu.github.io/Udemy 100 Days of Code/Day 80/annual_deaths_by_clinic.csv')
@@ -118,3 +118,19 @@ plt.legend(fontsize=18)
  
 plt.show()
 
+print(df_before_1846.describe())
+print(df_after_1846.describe())
+
+df_monthly['before_handwash'] = np.where(df_monthly.date < date, "Yes", "No")
+print(df_monthly)
+
+box = px.box(df_monthly, 
+             x='before_handwash', 
+             y='pct_deaths',
+             color='before_handwash',
+             title='How Have the Stats Changed with Handwashing?')
+ 
+box.update_layout(xaxis_title='Washing Hands?',
+                  yaxis_title='Percentage of Monthly Deaths',)
+ 
+box.show()
