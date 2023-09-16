@@ -3,6 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import plotly.express as px
+import seaborn as sns
+import scipy.stats as stats
 
 df_monthly = pd.read_csv('C:/Users/RSiu9/OneDrive/Documents/GitHub/RoySiu.github.io/Udemy 100 Days of Code/Day 80/monthly_deaths.csv')
 df_yearly = pd.read_csv('C:/Users/RSiu9/OneDrive/Documents/GitHub/RoySiu.github.io/Udemy 100 Days of Code/Day 80/annual_deaths_by_clinic.csv')
@@ -121,9 +123,11 @@ plt.show()
 print(df_before_1846.describe())
 print(df_after_1846.describe())
 
+# create a column using np.where
 df_monthly['before_handwash'] = np.where(df_monthly.date < date, "Yes", "No")
 print(df_monthly)
 
+# Create box plot of before handwashing
 box = px.box(df_monthly, 
              x='before_handwash', 
              y='pct_deaths',
@@ -134,3 +138,33 @@ box.update_layout(xaxis_title='Washing Hands?',
                   yaxis_title='Percentage of Monthly Deaths',)
  
 box.show()
+
+hist = px.histogram(
+    df_monthly,
+    x = 'pct_deaths',
+    nbins = 30,
+    opacity = 0.6,
+    barmode = 'overlay',
+    marginal = 'box',
+    color = 'before_handwash',
+    histnorm = 'percent',
+)
+hist.update_layout(xaxis_title='Proportion of Monthly Deaths',
+                   yaxis_title='Count',)
+
+hist.show()
+
+# Use Kernel Density Estimate (KDE) to produce a smoother distribution
+
+sns.kdeplot(df_before_1846.pct_deaths, fill = True, clip=(0,40), label = 'Before Handwashing')
+sns.kdeplot(df_after_1846.pct_deaths, fill = True, clip=(0,40), label = 'After Handwashing')
+plt.title('Est. Distribution of Monthly Death Rate Before and After Handwashing')
+plt.xlim(0, 40)
+plt.legend(fontsize=12)
+plt.show()
+
+# T-Test to show statistical significance
+t_stat, p_value = stats.ttest_ind(a=df_before_1846.pct_deaths, 
+                                  b=df_after_1846.pct_deaths)
+print(f'p-palue is {p_value:.10f}')
+print(f't-statstic is {t_stat:.4}')
