@@ -52,7 +52,6 @@ def blogpost_page(number):
 
 
 
-
 if __name__ == "__main__":
     # debug = True to activate live code updates
     app.run(debug=True)
